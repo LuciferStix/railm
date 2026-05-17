@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"railapi/api"
 	"railapi/internals/db"
+	"railapi/internals/rank"
+
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -16,7 +18,7 @@ type App struct {
 	mux *http.ServeMux
 }
 
-func NewApp(path string, port uint16) (*App, error) {
+func NewApp(path string, port uint16, threshold uint) (*App, error) {
 	sql, err := sql.Open("sqlite3", path)
 	if err != nil {
 		return nil, fmt.Errorf(
@@ -49,6 +51,11 @@ func NewApp(path string, port uint16) (*App, error) {
 	mux.HandleFunc("GET /trains/{number}", ctx.GetTrain)
 	mux.HandleFunc("GET /trains/between/{src}/{dest}", ctx.GetTrainsBetweenStations)
 	mux.HandleFunc("POST /trains", ctx.AddTrain)
+
+	mux.HandleFunc("GET /status/{number}", ctx.GetStatus)
+	mux.HandleFunc("POST /status/{number}/{station}", ctx.UpdateStatus)
+
+	rank.Init(threshold)
 
 	a := &App{
 		port: port,

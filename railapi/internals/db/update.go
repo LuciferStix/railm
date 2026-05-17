@@ -6,8 +6,8 @@ import (
 	"railapi/internals/models"
 )
 
-func UpdateStatus(db *sql.DB, status *models.Status) error {
-	_, err := db.Exec(
+func UpdateStatus(sql *sql.DB, status *models.Status) error {
+	_, err := sql.Exec(
 	   `UPDATE status
 		SET
 			station = (?1),

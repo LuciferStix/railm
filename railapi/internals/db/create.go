@@ -63,7 +63,7 @@ func CreateStatusTable(sql *sql.DB) error {
 		`CREATE TABLE IF NOT EXISTS status(
 			number TEXT PRIMARY KEY NOT NULL,
 			station TEXT,
-			status INTEGER,
+			state INTEGER,
 
 			FOREIGN KEY(number) REFERENCES train(number),
 			FOREIGN KEY(station) REFERENCES station(id)

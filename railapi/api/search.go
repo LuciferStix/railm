@@ -73,6 +73,11 @@ func (c *Context) GetStation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if station == nil {
+		failed(w, "invalid station id")
+		return
+	}
+
 	data, err := json.Marshal(station)
 	if err != nil {
 		log.Printf(
@@ -150,6 +155,11 @@ func (c *Context) GetTrain(w http.ResponseWriter, r *http.Request) {
 			err.Error(),
 		)
 		serverError(w)
+		return
+	}
+
+	if train == nil {
+		failed(w, "invalid train number")
 		return
 	}
 

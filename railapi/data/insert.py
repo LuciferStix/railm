@@ -49,9 +49,12 @@ URL = "http://localhost:8080"
 
 def insert(key: str, data: Payload) -> bool:
     resp = requests.post(
-        f"{URL}/add/{key}",
+        f"{URL}/{key}",
         json=data
     )
+
+    if resp.status_code != 200:
+        raise Exception(f"got code: {resp.status_code}")
 
     obj: dict[str, str] = resp.json()
     if obj["status"] != "success":
@@ -62,17 +65,17 @@ def insert(key: str, data: Payload) -> bool:
 
 def insert_routes(routes: list[Route]):
     for route in routes:
-        if not insert("route", route):
+        if not insert("routes", route):
             raise Exception("failed to send request")
 
 def insert_station(stations: list[Station]):
     for station in stations:
-        if not insert("station", station):
+        if not insert("stations", station):
             raise Exception("failed to send request")
 
 def insert_trains(trains: list[Train]):
     for train in trains:
-        if not insert("train", train):
+        if not insert("trains", train):
             raise Exception("failed to send request")
 
 def main() -> None:

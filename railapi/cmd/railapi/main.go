@@ -8,10 +8,15 @@ import (
 const (
 	DB_PATH = "database.db"
 	PORT = 8080
+	RANK_THRESHOLD = 3
 )
 
 func main() {
-	a, err := app.NewApp(DB_PATH, PORT)
+	a, err := app.NewApp(
+		DB_PATH,
+		PORT,
+		RANK_THRESHOLD,
+	)
 	if err != nil {
 		log.Fatalf(
 			"failed to initialize app: %v",
