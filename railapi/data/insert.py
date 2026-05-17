@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 
+# SPDX-License-Identifier: GPL-2.0
 # Author: xunicatt
-#
+# Project: railm (railapi) 
+# Copyright (c) 2026 xunicatt <contact.aniket.biswas@gmail.com>
+
 # By default no database is bundled with the server.
 # Just to play with the server, we need some kind of dummy
 # database.
