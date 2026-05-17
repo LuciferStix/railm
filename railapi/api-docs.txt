@@ -1,0 +1,55 @@
+# Docs for endpoints
+
+-------------------
+|  Version: 0.1   |
+-------------------
+
+Definitions:
+- fail-succes:
+  fail: {"status": "failed", reason: <string>}
+  sucess: {"status": "success"}
+- route: {"id": <string>, "name": <string>}
+- station: {"id": <string>, "name": <string>, "route": <string>, "position": <u16>}
+  > route: route.id
+  > position: unique position (order) of a station in a route
+
+- stops: {"station": <string>, "route": <string>, "arrival": <string>, "departure": <string>}
+  > arrival/departure: arrival/departure time of train for that stop in "HH:MM" format
+
+- train: {"number": <string>, "name": <string>, "start": <string>, "end": <string>, "stops": <[]stops>}
+  > start/end: start/end id from station.id
+
+- status: {"number": <string>, "station": <string>, "state" <u8>}
+  > status: 0 - running, 1 - arrived, 2 - left
+
+-> Add Request
+  1. POST /routes - input: <route>
+               output: fail-success
+  2. POST /stations - input: <station>
+                      output: fail-success
+  3. POST /trains - input: <train>
+                    output: fail-success
+
+-> Search Request
+    1. GET /routes - input:
+                     output: <[]route>
+    2. GET /stations - input:
+                       output: <[]string> (array of station ids)
+    3. GET /stations/<id> - input:
+                            output: <station>
+    4. GET /routes/<id>/stations - input:
+                                   output: <[]string> (array of station ids)
+    5. GET /trains - input:
+                     output: <[]string> (array of train numbers)
+    6. GET /trains/<number> - input:
+                              output: <train>
+    7. GET /routes/<id>/train - input:
+                                output: <[]string> (array of train numbers)
+    8. GET /trains/between/<src>/<dest> - input:
+                                          output: <[]string> (array of train numbers)
+
+-> Train Status
+    1. POST /status/<number>/<station> - input:
+                                         output: fail-success
+    2. GET /status/<number> - input:
+                              output: <status>
