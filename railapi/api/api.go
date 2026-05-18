@@ -48,3 +48,9 @@ func notFound(w http.ResponseWriter) {
 func badRequest(w http.ResponseWriter) {
 	w.WriteHeader(http.StatusBadRequest)
 }
+
+func appendCrosHeaders(h *http.Header) {
+	h.Set("Access-Control-Allow-Origin", "*")
+	h.Set("Access-Control-Allow-Methods", "GET, POST")
+	h.Set("Access-Control-Allow-Headers", "Content-Type")
+}

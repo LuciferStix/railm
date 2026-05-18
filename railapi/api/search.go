@@ -15,6 +15,9 @@ import (
 func (c *Context) GetRoutes(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
+	h := w.Header()
+	appendCrosHeaders(&h)
+
 	routes, err := db.GetRoutes(c.sql)
 	if err != nil {
 		log.Printf(
@@ -41,6 +44,9 @@ func (c *Context) GetRoutes(w http.ResponseWriter, r *http.Request) {
 func (c *Context) GetStations(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
+	h := w.Header()
+	appendCrosHeaders(&h)
+
 	stations, err := db.GetStations(c.sql)
 	if err != nil {
 		log.Printf(
@@ -66,6 +72,9 @@ func (c *Context) GetStations(w http.ResponseWriter, r *http.Request) {
 
 func (c *Context) GetStation(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
+
+	h := w.Header()
+	appendCrosHeaders(&h)
 
 	id := r.PathValue("id")
 	station, err := db.GetStation(c.sql, id)
@@ -99,6 +108,9 @@ func (c *Context) GetStation(w http.ResponseWriter, r *http.Request) {
 func (c *Context) GetStationsInRoute(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
+	h := w.Header()
+	appendCrosHeaders(&h)
+
 	id := r.PathValue("id")
 	stations, err := db.GetStationsInRoute(c.sql, id)
 	if err != nil {
@@ -126,6 +138,9 @@ func (c *Context) GetStationsInRoute(w http.ResponseWriter, r *http.Request) {
 func (c *Context) GetTrains(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
+	h := w.Header()
+	appendCrosHeaders(&h)
+
 	trains, err := db.GetTrains(c.sql)
 	if err != nil {
 		log.Printf(
@@ -151,6 +166,9 @@ func (c *Context) GetTrains(w http.ResponseWriter, r *http.Request) {
 
 func (c *Context) GetTrain(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
+
+	h := w.Header()
+	appendCrosHeaders(&h)
 
 	number := r.PathValue("number")
 	train, err := db.GetTrain(c.sql, number)
@@ -184,6 +202,9 @@ func (c *Context) GetTrain(w http.ResponseWriter, r *http.Request) {
 func (c *Context) GetTrainsBetweenStations(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
+	h := w.Header()
+	appendCrosHeaders(&h)
+
 	src := r.PathValue("src")
 	dest := r.PathValue("dest")
 
@@ -212,6 +233,9 @@ func (c *Context) GetTrainsBetweenStations(w http.ResponseWriter, r *http.Reques
 
 func (c *Context) GetTrainsInRoute(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
+
+	h := w.Header()
+	appendCrosHeaders(&h)
 
 	id := r.PathValue("id")
 
