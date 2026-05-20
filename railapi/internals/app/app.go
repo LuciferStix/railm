@@ -14,7 +14,7 @@ import (
 	"railapi/internals/db"
 	"railapi/internals/rank"
 
-	_ "github.com/mattn/go-sqlite3"
+	_ "modernc.org/sqlite"
 )
 
 type App struct {
@@ -24,7 +24,7 @@ type App struct {
 }
 
 func NewApp(path string, port string, threshold uint) (*App, error) {
-	sql, err := sql.Open("sqlite3", path)
+	sql, err := sql.Open("sqlite", path)
 	if err != nil {
 		return nil, fmt.Errorf(
 			"failed to open database: %v",
