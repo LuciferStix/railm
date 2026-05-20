@@ -9,8 +9,8 @@ Backend APIs (for Railm) to Crowd-Source and maintain train running status with 
 ## Build
 ### Server
 ```bash
-go build -o build/railapi cmd/railapi/main.go # build
-./build/railapi # run
+go build -o build/server cmd/server/main.go # build
+./build/server # run
 ```
 
 ### Insert Test Data

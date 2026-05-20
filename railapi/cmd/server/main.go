@@ -12,14 +12,18 @@ import (
 
 const (
 	DB_PATH = "database.db"
-	PORT = 8080
 	RANK_THRESHOLD = 3
 )
 
 func main() {
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = 3000
+	}
+
 	a, err := app.NewApp(
 		DB_PATH,
-		PORT,
+		port,
 		RANK_THRESHOLD,
 	)
 	if err != nil {
