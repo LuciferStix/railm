@@ -1,35 +1,49 @@
+// SPDX-License-Identifier: GPL-2.0
+// Author: xunicatt
+// Project: railm (railm) 
+// Copyright (c) 2026 xunicatt <contact.aniket.biswas@gmail.com>
+
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:railm/configs/configs.dart';
 
 class TrainStop {
-    String station;
-    String route;
-    String arrival;
-    String departure;
+    final String station;
+    final String route;
+    final String arrival;
+    final String departure;
 
-    TrainStop(this.station, this.route,
-              this.arrival, this.departure);
+    const TrainStop({
+        required this.station,
+        required this.route,
+        required this.arrival,
+        required this.departure
+    });
 
     factory TrainStop.fromJson(Map<String, dynamic> json) {
         return TrainStop(
-            json["station"],
-            json["route"],
-            json["arrival"],
-            json["departure"],
+            station: json["station"],
+            route: json["route"],
+            arrival: json["arrival"],
+            departure: json["departure"],
         );
     }
 }
 
 class Train {
-    String number;
-    String name;
-    String start;
-    String end;
-    List<TrainStop> stops;
+    final String number;
+    final String name;
+    final String start;
+    final String end;
+    final List<TrainStop> stops;
 
-    Train(this.number, this.name, this.start,
-          this.end, this.stops);
+    const Train({
+        required this.number,
+        required this.name,
+        required this.start,
+        required this.end,
+        required this.stops,
+    });
 
     factory Train.fromJson(Map<String, dynamic> json) {
         List<TrainStop> stops = (json["stops"] as List<dynamic>).map(
@@ -37,12 +51,23 @@ class Train {
         ).toList();
 
         return Train(
-            json["number"],
-            json["name"],
-            json["start"],
-            json["end"],
-            stops,
+            number: json["number"],
+            name: json["name"],
+            start: json["start"],
+            end: json["end"],
+            stops: stops,
         );
+    }
+
+    static Future<Train?> fetchTrain(String number) async {
+        final String url = "${Configs.baseUrl}/trains/$number";
+        final response = await http.get(Uri.parse(url));
+        final json = jsonDecode(response.body) as Map<String, dynamic>;
+        if (json.containsKey("status") && json["status"] == "failed") {
+            return null;
+        }
+
+        return Train.fromJson(json);
     }
 
     static Future<List<String>> fetchTrainNumbersBetweenStations(
@@ -50,7 +75,7 @@ class Train {
         String dest,
     ) async {
         final String url = "${Configs.baseUrl}/trains/between/$src/$dest";
-        var response = await http.get(Uri.parse(url));
+        final response = await http.get(Uri.parse(url));
         return List<String>.from(jsonDecode(response.body));
     }
 

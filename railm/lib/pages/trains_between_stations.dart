@@ -1,3 +1,8 @@
+// SPDX-License-Identifier: GPL-2.0
+// Author: xunicatt
+// Project: railm (railm) 
+// Copyright (c) 2026 xunicatt <contact.aniket.biswas@gmail.com>
+
 import 'package:flutter/material.dart';
 import 'package:railm/components/loading.dart';
 import 'package:railm/models/station.dart';
@@ -5,10 +10,16 @@ import 'package:railm/models/train.dart';
 import 'package:railm/pages/train_live_status.dart';
 
 class TrainListPage extends StatefulWidget {
-    final Station src;
-    final Station dest;
+    final List<Station> stations;
+    final Station srcStation;
+    final Station destStation;
 
-    const TrainListPage(this.src, this.dest, {super.key});
+    const TrainListPage({
+        super.key,
+        required this.stations,
+        required this.srcStation,
+        required this.destStation,
+    });
 
     @override
     State<StatefulWidget> createState() => _TrainListPage();
@@ -26,8 +37,8 @@ class _TrainListPage extends State<TrainListPage> {
 
     Future<void> loadTrains() async {
         final data = await Train.fetchTrainsBetweenStations(
-            widget.src.id,
-            widget.dest.id,
+            widget.srcStation.id,
+            widget.destStation.id,
         );
         setState(() {
             trains = data;
@@ -50,8 +61,9 @@ class _TrainListPage extends State<TrainListPage> {
                     padding: .all(10),
                     child: TrainList(
                         trains: trains,
-                        srcStation: widget.src,
-                        destStation: widget.dest,
+                        stations: widget.stations,
+                        srcStation: widget.srcStation,
+                        destStation: widget.destStation,
                     ),
                 ),
             ),
@@ -61,12 +73,14 @@ class _TrainListPage extends State<TrainListPage> {
 
 class TrainList extends StatelessWidget {
     final List<Train> trains;
+    final List<Station> stations;
     final Station srcStation;
     final Station destStation;
     
     const TrainList({
         super.key,
         required this.trains,
+        required this.stations,
         required this.srcStation,
         required this.destStation,
     });
@@ -101,9 +115,10 @@ class TrainList extends StatelessWidget {
                             itemBuilder: (context, index) {
                                 final train = trains[index];
                                 return TrainCard(
-                                    train,
-                                    srcStation,
-                                    destStation,
+                                    train: train,
+                                    stations: stations,
+                                    srcStation: srcStation,
+                                    destStation: destStation,
                                 );
                             },
                             separatorBuilder: (context, index) {
@@ -174,10 +189,17 @@ class TrainListHeading extends StatelessWidget {
 
 class TrainCard extends StatelessWidget {
     final Train train;
-    final Station src;
-    final Station dest;
+    final List<Station> stations;
+    final Station srcStation;
+    final Station destStation;
 
-    const TrainCard(this.train, this.src, this.dest, {super.key});
+    const TrainCard({
+        super.key,
+        required this.train,
+        required this.stations,
+        required this.srcStation,
+        required this.destStation,
+    });
 
     @override
     Widget build(BuildContext context) {
@@ -186,7 +208,10 @@ class TrainCard extends StatelessWidget {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => TrainLiveStatusPage(train),
+                        builder: (context) => TrainLiveStatusPage(
+                            train: train,
+                            stations: stations,
+                        ),
                     ),
                 );
             },
@@ -202,8 +227,8 @@ class TrainCard extends StatelessWidget {
                         ),
                         TrainCardSecondRow(
                             train: train,
-                            srcStationId: src.id,
-                            destStationId: dest.id,
+                            srcStationId: srcStation.id,
+                            destStationId: destStation.id,
                         ),
                     ],
                 ),

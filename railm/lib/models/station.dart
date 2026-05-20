@@ -1,22 +1,32 @@
+// SPDX-License-Identifier: GPL-2.0
+// Author: xunicatt
+// Project: railm (railm) 
+// Copyright (c) 2026 xunicatt <contact.aniket.biswas@gmail.com>
+
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:railm/configs/configs.dart';
 
 class Station {
-    String id;
-    String name;
-    String route;
-    int position;
+    final String id;
+    final String name;
+    final String route;
+    final int position;
 
-    Station(this.id, this.name, this.route, this.position);
+    const Station({
+        required this.id,
+        required this.name,
+        required this.route,
+        required this.position,
+    });
 
     factory Station.fromJson(Map<String, dynamic> json) {
         return Station(
-            json["id"],
-            json["name"],
-            json["route"],
-            json["position"],
+            id: json["id"],
+            name: json["name"],
+            route: json["route"],
+            position: json["position"],
         );
     }
 

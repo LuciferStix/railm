@@ -1,6 +1,13 @@
+// SPDX-License-Identifier: GPL-2.0
+// Author: xunicatt
+// Project: railm (railm) 
+// Copyright (c) 2026 xunicatt <contact.aniket.biswas@gmail.com>
+
 import 'package:flutter/material.dart';
 import 'package:railm/components/loading.dart';
 import 'package:railm/models/station.dart';
+import 'package:railm/models/train.dart';
+import 'package:railm/pages/train_live_status.dart';
 import 'package:railm/pages/trains_between_stations.dart';
 
 class TrainHomePage extends StatefulWidget {
@@ -28,6 +35,34 @@ class _TrainHomePage extends State<TrainHomePage> {
         loadStations();
     }
 
+    Future<bool> searchTrain(String? number) async {
+        if (number == null) {
+            return false;
+        }
+
+        final train = await Train.fetchTrain(number);
+
+        if (train == null) {
+            return false;
+        }
+
+        if (!mounted) {
+            return false;
+        }
+
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => TrainLiveStatusPage(
+                    train: train,
+                    stations: stations,
+                ),
+            ),
+        );
+
+        return true;
+    }
+
     @override
     Widget build(BuildContext context) {
         if (loading) {
@@ -43,7 +78,9 @@ class _TrainHomePage extends State<TrainHomePage> {
                     mainAxisSize: .max,
                     spacing: 30,
                     children: [
-                        const LiveTrainCard(),
+                        LiveTrainCard(
+                            onSearchPressed: searchTrain,
+                        ),
                         FindTrainsCard(
                             stations: stations
                         ),
@@ -54,30 +91,40 @@ class _TrainHomePage extends State<TrainHomePage> {
     }
 }
 
-class LiveTrainCard extends StatelessWidget {
-    const LiveTrainCard({super.key});
+class LiveTrainCard extends StatefulWidget {
+    final Future<bool> Function(String?) onSearchPressed;
 
+    const LiveTrainCard({
+        super.key,
+        required this.onSearchPressed,
+    });
+
+    @override
+    State<StatefulWidget> createState() => _LiveTrainCard();
+}
+
+class _LiveTrainCard extends State<LiveTrainCard> {
     @override
     Widget build(BuildContext context) {
         return Card(
             child: Container(
                 padding: .all(10),
                 width: .infinity,
-                child: const Column(
+                child: Column(
                     mainAxisAlignment: .center,
                     crossAxisAlignment: .center,
                     mainAxisSize: .min,
                     children: [
                         LiveTrainCardHeading(),
                         SizedBox(height: 20),
-                        LiveTrainCardNumberField(onPressed: onClick),
+                        LiveTrainCardNumberField(
+                            onSearchPressed: widget.onSearchPressed,
+                        ),
                     ],
                 ),
             ),
         );
     }
-
-    static void onClick() {}
 }
 
 class LiveTrainCardHeading extends StatelessWidget {
@@ -94,19 +141,43 @@ class LiveTrainCardHeading extends StatelessWidget {
     }
 }
 
-class LiveTrainCardNumberField extends StatelessWidget {
-    final VoidCallback? onPressed;
+class LiveTrainCardNumberField extends StatefulWidget {
+    final Future<bool> Function(String?) onSearchPressed;
 
-    const LiveTrainCardNumberField({super.key, required this.onPressed});
+    const LiveTrainCardNumberField({
+        super.key,
+        required this.onSearchPressed,
+    });
+
+    @override
+    State<StatefulWidget> createState() => _LiveTrainCardNumberField();
+}
+
+class _LiveTrainCardNumberField extends State<LiveTrainCardNumberField> {
+    String? value;
+    TextEditingController controller = .new();
+
+    Future<void> onSearchPressed() async {
+        final res = await widget.onSearchPressed(value);
+        if (!res) {
+            setState(() { value = null; });
+            controller.clear();
+        }
+    }
 
     @override
     Widget build(BuildContext context) {
         return TextField(
+            controller: controller,
+            onChanged: (text) {
+                setState(() { value = text; });
+            },
             decoration: InputDecoration(
                 filled: true,
                 hintText: 'Train Number',
                 suffixIcon: IconButton(
-                    onPressed: onPressed,
+                    onPressed: value == null ?
+                        null : () => onSearchPressed(),
                     color: Colors.blue,
                     icon: Icon(Icons.search),
                 ),
@@ -153,8 +224,9 @@ class _FindTrainsCard extends State<FindTrainsCard> {
                 context,
                 MaterialPageRoute<void>(
                     builder: (context) => TrainListPage(
-                        srcStation,
-                        destStation,
+                        srcStation: srcStation,
+                        destStation: destStation,
+                        stations: widget.stations,
                     ),
                 ),
             );
