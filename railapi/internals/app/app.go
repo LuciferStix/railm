@@ -18,12 +18,12 @@ import (
 )
 
 type App struct {
-	port uint16
+	port string
 	ctx *api.Context
 	mux *http.ServeMux
 }
 
-func NewApp(path string, port uint16, threshold uint) (*App, error) {
+func NewApp(path string, port string, threshold uint) (*App, error) {
 	sql, err := sql.Open("sqlite3", path)
 	if err != nil {
 		return nil, fmt.Errorf(
@@ -76,10 +76,10 @@ func (a *App) Deinit() {
 }
 
 func (a *App) Run() error {
-	log.Printf("started server on port: %v", a.port)
+	log.Print("started server on port: " + a.port)
 
 	return http.ListenAndServe(
-		fmt.Sprintf(":%v", a.port),
+		":" + a.port,
 		a.mux,
 	)
 }
