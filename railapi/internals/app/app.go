@@ -14,7 +14,7 @@ import (
 	"railapi/internals/db"
 	"railapi/internals/rank"
 
-	_ "modernc.org/sqlite"
+	_ "github.com/tursodatabase/libsql-client-go/libsql"
 )
 
 type App struct {
@@ -23,8 +23,8 @@ type App struct {
 	mux *http.ServeMux
 }
 
-func NewApp(path string, port string, threshold uint) (*App, error) {
-	sql, err := sql.Open("sqlite", path)
+func NewApp(url string, port string, threshold uint) (*App, error) {
+	sql, err := sql.Open("libsql", url)
 	if err != nil {
 		return nil, fmt.Errorf(
 			"failed to open database: %v",

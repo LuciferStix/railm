@@ -20,6 +20,7 @@
 import json
 import sys
 import requests
+import os
 from typing import TypedDict, Any
 
 class Route(TypedDict):
@@ -48,7 +49,11 @@ class Train(TypedDict):
 
 Payload = Route | Station | Train
 
-URL = "http://localhost:8080"
+port = os.getenv("PORT")
+if port == None:
+    port = "3000"
+
+URL = f"http://localhost:{port}"
 
 def insert(key: str, data: Payload) -> bool:
     resp = requests.post(

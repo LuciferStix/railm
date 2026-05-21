@@ -2,7 +2,7 @@
   "routes": [{ "id": "hwh-bwn", "name": "Howrah Bardhaman Main" }],
   "stations": [
     { "id": "hwh", "name": "Howrah Jn", "route": "hwh-bwn", "position": 1 },
-    { "id": "llh", "name": "Liluah", "route": "hwh-foo", "position": 2 },
+    { "id": "llh", "name": "Liluah", "route": "hwh-bwn", "position": 2 },
     { "id": "beq", "name": "Belur", "route": "hwh-bwn", "position": 3 },
     { "id": "bly", "name": "Bally", "route": "hwh-bwn", "position": 4 },
     { "id": "upa", "name": "Uttarpara", "route": "hwh-bwn", "position": 5 },

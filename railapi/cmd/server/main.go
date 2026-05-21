@@ -1,18 +1,18 @@
 // SPDX-License-Identifier: GPL-2.0
 // Author: xunicatt
-// Project: railm (railapi) 
+// Project: railm (railapi)
 // Copyright (c) 2026 xunicatt <contact.aniket.biswas@gmail.com>
 
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"railapi/internals/app"
 )
 
 const (
-	DB_PATH = "database.db"
 	RANK_THRESHOLD = 3
 )
 
@@ -22,8 +22,13 @@ func main() {
 		port = "3000"
 	}
 
+	url := os.Getenv("TURSO_DATABASE_URL")
+	token := os.Getenv("TURSO_DATABASE_TOKEN")
+
+	url = fmt.Sprintf("%v?authToken=%v", url, token)
+
 	a, err := app.NewApp(
-		DB_PATH,
+		url,
 		port,
 		RANK_THRESHOLD,
 	)
