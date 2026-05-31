@@ -59,12 +59,12 @@ class SettingThemeOptions extends StatefulWidget {
     const SettingThemeOptions({super.key, required this.onThemeChanged});
 
     @override
-    State<StatefulWidget> createState() => _SettingThemeOptions();
+    State<StatefulWidget> createState() => SettingThemeOptionsState();
 }
 
-class _SettingThemeOptions extends State<SettingThemeOptions> {
-    String? value;
-    final db = Localstore.getInstance(useSupportDir: true);
+class SettingThemeOptionsState extends State<SettingThemeOptions> {
+    String? _value;
+    final _db = Localstore.getInstance(useSupportDir: true);
 
     @override
     void initState() {
@@ -73,22 +73,22 @@ class _SettingThemeOptions extends State<SettingThemeOptions> {
     }
 
     Future<void> loadThemeData() async {
-        final data = await db.collection("settings").doc("theme").get() ?? {
+        final data = await _db.collection("settings").doc("theme").get() ?? {
             'value': 'system'
         };
 
         setState(() {
-            value = data['value'];
+            _value = data['value'];
         });
     }
 
-    void onThemeSelected(String? x) {
+    void _onThemeSelected(String? x) {
         if (x != null) {
             setState(() {
-                value = x;
+                _value = x;
             }); 
 
-            db.collection("settings")
+            _db.collection("settings")
                 .doc("theme").set({
                     'value': x,
                 });
@@ -126,7 +126,7 @@ class _SettingThemeOptions extends State<SettingThemeOptions> {
                             ),
                         ),
                         DropdownMenu<String>(
-                            initialSelection: value,
+                            initialSelection: _value,
                             inputDecorationTheme: InputDecorationTheme(
                                 filled: true,
                                 isDense: true,
@@ -144,7 +144,7 @@ class _SettingThemeOptions extends State<SettingThemeOptions> {
                                     ),
                                 ),
                             ), 
-                            onSelected: onThemeSelected,
+                            onSelected: _onThemeSelected,
                             dropdownMenuEntries: [
                                 DropdownMenuEntry(value: "system", label: "System"),
                                 DropdownMenuEntry(value: "light", label: "Light"),
@@ -162,29 +162,29 @@ class SettingCacheOptions extends StatefulWidget {
     const SettingCacheOptions({super.key});
 
     @override
-    State<StatefulWidget> createState() => _SettingCacheOptions();
+    State<StatefulWidget> createState() => SettingCacheOptionsState();
 }
 
 
-class _SettingCacheOptions extends State<SettingCacheOptions> {
-    bool autoRefresh = false;
-    final db = Localstore.getInstance(useSupportDir: true);
+class SettingCacheOptionsState extends State<SettingCacheOptions> {
+    bool _autoRefresh = false;
+    final _db = Localstore.getInstance(useSupportDir: true);
 
     @override
     void initState() {
         super.initState();
-        loadAutoRefresh();
+        _loadAutoRefresh();
     }
 
-    Future<void> loadAutoRefresh() async {
-        final data = await db.collection("settings")
+    Future<void> _loadAutoRefresh() async {
+        final data = await _db.collection("settings")
             .doc("auto-refresh")
             .get() ?? {
                 'value': false,
             };
 
         setState(() {
-            autoRefresh = data['value'];
+            _autoRefresh = data['value'];
         });
     }
 
@@ -197,13 +197,13 @@ class _SettingCacheOptions extends State<SettingCacheOptions> {
                 SettingCacheOptionsButton(
                     text: 'Clear Train Cache',
                     onPressed: () {
-                        db.collection("trains").delete();
+                        _db.collection("trains").delete();
                     },
                 ),
                 SettingCacheOptionsButton(
                     text: 'Clear Station Cache',
                     onPressed: () {
-                        db.collection("stations").delete();
+                        _db.collection("stations").delete();
                     },
                 ),
                 Padding(
@@ -221,13 +221,13 @@ class _SettingCacheOptions extends State<SettingCacheOptions> {
                             ),
                             Switch(
                                 activeThumbColor: Colors.blue,
-                                value: autoRefresh,
+                                value: _autoRefresh,
                                 onChanged: (x) {
                                     setState(() {
-                                        autoRefresh = x; 
+                                        _autoRefresh = x; 
                                     });
 
-                                    db.collection("settings")
+                                    _db.collection("settings")
                                         .doc("auto-refresh")
                                         .set({
                                             'value': x,

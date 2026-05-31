@@ -16,12 +16,12 @@ class App extends StatefulWidget {
     const App({super.key});
 
     @override
-    State<StatefulWidget> createState() => _App();
+    State<StatefulWidget> createState() => AppState();
 }
 
-class _App extends State<App> {
+class AppState extends State<App> {
     final db = Localstore.getInstance(useSupportDir: true);
-    ThemeMode? themeMode;
+    ThemeMode? _themeMode;
 
     @override
     void initState() {
@@ -30,8 +30,8 @@ class _App extends State<App> {
         checkCacheRefresh();
     }
 
-    void onThemeChanged(ThemeMode mode) {
-        setState(() => themeMode = mode);
+    void _onThemeChanged(ThemeMode mode) {
+        setState(() => _themeMode = mode);
     }
 
     Future<void> checkCacheRefresh() async {
@@ -64,13 +64,13 @@ class _App extends State<App> {
         setState(() {
             switch (theme['value']) {
                 case "light":
-                    themeMode = .light;
+                    _themeMode = .light;
                     break;
                 case "dark":
-                    themeMode = .dark;
+                    _themeMode = .dark;
                     break;
                 default:
-                    themeMode = .system;
+                    _themeMode = .system;
             }
         });
     }
@@ -86,11 +86,11 @@ class _App extends State<App> {
                 brightness: .dark,
                 colorSchemeSeed: Colors.blue,
             ),
-            themeMode: themeMode,
+            themeMode: _themeMode,
             debugShowCheckedModeBanner: false,
             home: Scaffold(
                 body: SafeArea(child: TrainHomePage(
-                    onThemeChanged: onThemeChanged,
+                    onThemeChanged: _onThemeChanged,
                 )),
             ),
         );

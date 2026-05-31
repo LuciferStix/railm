@@ -23,26 +23,26 @@ class TrainListPage extends StatefulWidget {
     });
 
     @override
-    State<StatefulWidget> createState() => _TrainListPage();
+    State<StatefulWidget> createState() => TrainListPageState();
 }
 
-class _TrainListPage extends State<TrainListPage> {
-    List<Train> trains = [];
-    bool loading = true;
-    final db = Localstore.getInstance(useSupportDir: true);
+class TrainListPageState extends State<TrainListPage> {
+    List<Train> _trains = [];
+    bool _loading = true;
+    final _db = Localstore.getInstance(useSupportDir: true);
 
     @override
     void initState() {
         super.initState();
-        loadTrains();
+        _loadTrains();
     }
 
-    Future<void> loadTrains() async {
+    Future<void> _loadTrains() async {
         List<Train> data = [];
 
-        final trainNumbersCollection = await db.collection("trains-between",)
+        final trainNumbersCollection = await _db.collection("trains-between",)
             .doc("${widget.srcStation.id}-${widget.destStation.id}").get();
-        final trainsCollection = await db.collection("trains").get();
+        final trainsCollection = await _db.collection("trains").get();
 
         if (trainNumbersCollection != null && trainsCollection != null) {
             List<String> numbers = (trainNumbersCollection["numbers"] as List<dynamic>).cast();
@@ -56,7 +56,7 @@ class _TrainListPage extends State<TrainListPage> {
                 widget.destStation.id,
             );
 
-            db.collection("trains-between")
+            _db.collection("trains-between")
                 .doc("${widget.srcStation.id}-${widget.destStation.id}")
                 .set({
                     "numbers": data.map((e) => e.number).toList(),
@@ -68,21 +68,21 @@ class _TrainListPage extends State<TrainListPage> {
                     continue;
                 }
 
-                db.collection("trains")
+                _db.collection("trains")
                     .doc(d.number)
                     .set(d.toMap());
             }
         }
 
         setState(() {
-            trains = data;
-            loading = false;
+            _trains = data;
+            _loading = false;
         });
     }
 
     @override
     Widget build(BuildContext context) {
-        if (loading) {
+        if (_loading) {
             return Scaffold(
                 body: Loading(),
             );
@@ -94,7 +94,7 @@ class _TrainListPage extends State<TrainListPage> {
                     alignment: .topCenter,
                     padding: .all(10),
                     child: TrainList(
-                        trains: trains,
+                        trains: _trains,
                         stations: widget.stations,
                         srcStation: widget.srcStation,
                         destStation: widget.destStation,
@@ -306,7 +306,7 @@ class TrainCardFirstRow extends StatelessWidget {
                     style: .new(
                         fontSize: 12,
                         fontWeight: .w700,
-                    )
+                    ),
                 ),
             ],
         );
@@ -325,7 +325,7 @@ class TrainCardSecondRow extends StatelessWidget {
         required this.destStationId,
     });
 
-    String getDuration(String start, String end) {
+    String _getDuration(String start, String end) {
         final startTime = start.split(':');
         final endTime = end.split(':');
 
@@ -367,7 +367,7 @@ class TrainCardSecondRow extends StatelessWidget {
         final destArrival = destStop.arrival == '--:--' ?
                                 destStop.departure : destStop.arrival;
 
-        final duration = getDuration(srcArrival, destArrival);
+        final duration = _getDuration(srcArrival, destArrival);
 
         return Row(
             mainAxisAlignment: .spaceBetween,

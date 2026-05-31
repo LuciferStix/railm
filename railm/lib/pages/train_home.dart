@@ -18,42 +18,42 @@ class TrainHomePage extends StatefulWidget {
     const TrainHomePage({super.key, required this.onThemeChanged});
 
     @override
-    State<StatefulWidget> createState() => _TrainHomePage();
+    State<StatefulWidget> createState() => TrainHomePageState();
 }
 
-class _TrainHomePage extends State<TrainHomePage> {
-    bool loading = true;
-    List<Station> stations = [];
-    final db = Localstore.getInstance(useSupportDir: true);
+class TrainHomePageState extends State<TrainHomePage> {
+    bool _loading = true;
+    List<Station> _stations = [];
+    final _db = Localstore.getInstance(useSupportDir: true);
 
-    Future<void> loadStations() async {
+    @override
+    void initState() {
+        super.initState();
+        _loadStations();
+    }
+
+    Future<void> _loadStations() async {
         List<Station> data = [];
 
-        final collections = await db.collection("stations").get();
+        final collections = await _db.collection("stations").get();
         if (collections != null) {
             collections.forEach((_, v) => data.add(Station.fromMap(v)));
         } else {
             data = await Station.fetchStations();
             for (final d in data) {
-                db.collection("stations")
+                _db.collection("stations")
                     .doc(d.id)
                     .set(d.toMap());
             }
         }
 
         setState(() {
-            stations = data;
-            loading = false;
+            _stations = data;
+            _loading = false;
         });
     }
 
-    @override
-    void initState() {
-        super.initState();
-        loadStations();
-    }
-
-    Future<bool> searchTrain(String? number) async {
+    Future<bool> _searchTrain(String? number) async {
         if (number == null) {
             return false;
         }
@@ -73,7 +73,7 @@ class _TrainHomePage extends State<TrainHomePage> {
             MaterialPageRoute(
                 builder: (context) => TrainLiveStatusPage(
                     train: train,
-                    stations: stations,
+                    stations: _stations,
                 ),
             ),
         );
@@ -83,7 +83,7 @@ class _TrainHomePage extends State<TrainHomePage> {
 
     @override
     Widget build(BuildContext context) {
-        if (loading) {
+        if (_loading) {
             return Loading();
         }
 
@@ -118,12 +118,8 @@ class _TrainHomePage extends State<TrainHomePage> {
                                 mainAxisSize: .max,
                                 spacing: 30,
                                 children: [
-                                    LiveTrainCard(
-                                        onSearchPressed: searchTrain,
-                                    ),
-                                    FindTrainsCard(
-                                        stations: stations
-                                    ),
+                                    LiveTrainCard(onSearchPressed: _searchTrain),
+                                    FindTrainsCard(stations: _stations),
                                 ]
                             ),
                         ),
@@ -143,10 +139,10 @@ class LiveTrainCard extends StatefulWidget {
     });
 
     @override
-    State<StatefulWidget> createState() => _LiveTrainCard();
+    State<StatefulWidget> createState() => LiveTrainCardState();
 }
 
-class _LiveTrainCard extends State<LiveTrainCard> {
+class LiveTrainCardState extends State<LiveTrainCard> {
     @override
     Widget build(BuildContext context) {
         return Card(
@@ -193,33 +189,33 @@ class LiveTrainCardNumberField extends StatefulWidget {
     });
 
     @override
-    State<StatefulWidget> createState() => _LiveTrainCardNumberField();
+    State<StatefulWidget> createState() => LiveTrainCardNumberFieldState();
 }
 
-class _LiveTrainCardNumberField extends State<LiveTrainCardNumberField> {
-    String? value;
-    TextEditingController controller = .new();
+class LiveTrainCardNumberFieldState extends State<LiveTrainCardNumberField> {
+    String? _value;
+    TextEditingController _controller = .new();
 
     Future<void> onSearchPressed() async {
-        final res = await widget.onSearchPressed(value);
+        final res = await widget.onSearchPressed(_value);
         if (!res) {
-            setState(() { value = null; });
-            controller.clear();
+            setState(() { _value = null; });
+            _controller.clear();
         }
     }
 
     @override
     Widget build(BuildContext context) {
         return TextField(
-            controller: controller,
+            controller: _controller,
             onChanged: (text) {
-                setState(() { value = text; });
+                setState(() { _value = text; });
             },
             decoration: InputDecoration(
                 filled: true,
                 hintText: 'Train Number',
                 suffixIcon: IconButton(
-                    onPressed: value == null ?
+                    onPressed: _value == null ?
                         null : () => onSearchPressed(),
                     color: Colors.blue,
                     icon: Icon(Icons.search),
@@ -239,27 +235,27 @@ class FindTrainsCard extends StatefulWidget {
     const FindTrainsCard({super.key, required this.stations});
 
     @override
-    State<StatefulWidget> createState() => _FindTrainsCard();
+    State<StatefulWidget> createState() => FindTrainsCardState();
 }
 
-class _FindTrainsCard extends State<FindTrainsCard> {
-    String? src;
-    String? dest;
+class FindTrainsCardState extends State<FindTrainsCard> {
+    String? _src;
+    String? _dest;
 
-    final FocusNode fromFocus = FocusNode();
-    final FocusNode toFocus = FocusNode();
+    final FocusNode _fromFocus = FocusNode();
+    final FocusNode _toFocus = FocusNode();
 
-    VoidCallback? onSearchButtonPressed() {
-        if (src == null || dest == null) {
+    VoidCallback? _onSearchButtonPressed() {
+        if (_src == null || _dest == null) {
             return null;
         }
 
         final srcStation = widget.stations.firstWhere(
-            (s) => s.id == src!,
+            (s) => s.id == _src!,
         );
 
         final destStation = widget.stations.firstWhere(
-            (s) => s.id == dest!,
+            (s) => s.id == _dest!,
         );
 
         return () {
@@ -293,10 +289,10 @@ class _FindTrainsCard extends State<FindTrainsCard> {
                             hintText: 'From',
                             onChanged: (x) {
                                 setState(() {
-                                    src = x;
+                                    _src = x;
                                 });
                             },
-                            focusNode: fromFocus,
+                            focusNode: _fromFocus,
                             entries: widget.stations.map((station) {
                                 return DropdownMenuEntry(
                                     value: station.id,
@@ -309,10 +305,10 @@ class _FindTrainsCard extends State<FindTrainsCard> {
                             hintText: 'To',
                             onChanged: (x) {
                                 setState(() {
-                                    dest = x;
+                                    _dest = x;
                                 });
                             },
-                            focusNode: toFocus,
+                            focusNode: _toFocus,
                             entries: widget.stations.map((station) {
                                 return DropdownMenuEntry(
                                     value: station.id,
@@ -322,7 +318,7 @@ class _FindTrainsCard extends State<FindTrainsCard> {
                         ),
                         const SizedBox(height: 20),
                         FindTrainsCardSearchButton(
-                            onPressed: onSearchButtonPressed(),
+                            onPressed: _onSearchButtonPressed(),
                         ),
                     ],
                 ),
@@ -428,5 +424,4 @@ class FindTrainsCardSearchButton extends StatelessWidget {
             ),
         );
     }
-
 }

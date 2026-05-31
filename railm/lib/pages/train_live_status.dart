@@ -20,11 +20,11 @@ class TrainLiveStatusPage extends StatefulWidget {
     });
 
     @override
-    State<StatefulWidget> createState() => _TrainLiveStatusPage();
+    State<StatefulWidget> createState() => TrainLiveStatusPageState();
 }
 
-class _TrainLiveStatusPage extends State<TrainLiveStatusPage> {
-    bool liveMode = false;
+class TrainLiveStatusPageState extends State<TrainLiveStatusPage> {
+    bool _liveMode = false;
 
     @override
     Widget build(BuildContext context) {
@@ -40,9 +40,9 @@ class _TrainLiveStatusPage extends State<TrainLiveStatusPage> {
                             TrainLiveStatusHeading(
                                 trainNumber: widget.train.number,
                                 trainName: widget.train.name,
-                                value: liveMode,
+                                value: _liveMode,
                                 onChanged: (x) {
-                                    setState(() { liveMode = x; });
+                                    setState(() { _liveMode = x; });
                                 }
                             ),
                             Expanded(
@@ -50,7 +50,7 @@ class _TrainLiveStatusPage extends State<TrainLiveStatusPage> {
                                     trainNumber: widget.train.number,
                                     stops: widget.train.stops,
                                     stations: widget.stations,
-                                    isLiveMode: liveMode,
+                                    isLiveMode: _liveMode,
                                 ),
                             ),
                         ], 
@@ -129,7 +129,7 @@ class TrainLiveStatusHeading extends StatelessWidget {
                             ],
                         ),
                     ],
-                ) 
+                ),
             ],
         );
     }
@@ -150,18 +150,18 @@ class TrainStopsList extends StatefulWidget {
     });
 
     @override
-    State<StatefulWidget> createState() => _TrainStopsList();
+    State<StatefulWidget> createState() => TrainStopsListState();
 }
 
-class _TrainStopsList extends State<TrainStopsList> {
-    Status? status;
-    Timer? timer;
+class TrainStopsListState extends State<TrainStopsList> {
+    Status? _status;
+    Timer? _timer;
 
     @override
     void initState() {
         super.initState();
 
-        timer = Timer.periodic(
+        _timer = Timer.periodic(
             Duration(seconds: 2),
             (_) async {
                 if (widget.isLiveMode) {
@@ -175,7 +175,7 @@ class _TrainStopsList extends State<TrainStopsList> {
                 }
 
                 setState(() {
-                    status = data;
+                    _status = data;
                 });
             }
         );
@@ -184,10 +184,10 @@ class _TrainStopsList extends State<TrainStopsList> {
     @override
     void dispose() {
         super.dispose();
-        timer?.cancel();
+        _timer?.cancel();
     }
 
-    VoidCallback? getOnTap(String stationId) {
+    VoidCallback? _getOnTap(String stationId) {
         if (!widget.isLiveMode) {
             return null;
         }
@@ -196,7 +196,7 @@ class _TrainStopsList extends State<TrainStopsList> {
             // TODO: improve error handling
             // for update failure
             setState(() {
-                status = Status(
+                _status = Status(
                     state: TrainStatus.running,
                     number: widget.trainNumber,
                     station: stationId,
@@ -225,10 +225,10 @@ class _TrainStopsList extends State<TrainStopsList> {
                                 return TrainStopCard(
                                     stop: stop,
                                     stations: widget.stations,
-                                    here: status != null ?
-                                            status?.station == stop.station :
+                                    here: _status != null ?
+                                            _status?.station == stop.station :
                                             false,
-                                    onTap: getOnTap(stop.station),
+                                    onTap: _getOnTap(stop.station),
                                 );
                             },
                             separatorBuilder: (context, index) {
@@ -300,7 +300,7 @@ class TrainStopCard extends StatelessWidget {
     final List<Station> stations;
     final bool here;
     final VoidCallback? onTap;
-    late Station station;
+    late Station _station;
 
     TrainStopCard({
         super.key,
@@ -309,7 +309,7 @@ class TrainStopCard extends StatelessWidget {
         required this.here,
         this.onTap,
     }) {
-        station = stations.firstWhere(
+        _station = stations.firstWhere(
             (s) => s.id == stop.station
         );
     }
@@ -351,7 +351,7 @@ class TrainStopCard extends StatelessWidget {
                             flex: 4,
                             child: Container(
                                 alignment: .centerStart,
-                                child: Text(station.name),
+                                child: Text(_station.name),
                             ),
                         ),
                         Expanded(
