@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:railm/components/loading.dart';
 import 'package:railm/models/station.dart';
 import 'package:railm/models/train.dart';
+import 'package:railm/components/map.dart';
 import 'package:railm/pages/settings.dart';
 import 'package:railm/pages/train_live_status.dart';
 import 'package:railm/pages/trains_between_stations.dart';
@@ -259,15 +260,28 @@ class FindTrainsCardState extends State<FindTrainsCard> {
         );
 
         return () {
-            Navigator.push<void>(
-                context,
-                MaterialPageRoute<void>(
-                    builder: (context) => TrainListPage(
-                        srcStation: srcStation,
-                        destStation: destStation,
-                        stations: widget.stations,
-                    ),
-                ),
+            showModalBottomSheet(
+                context: context, 
+                isScrollControlled: true,
+                enableDrag: false,
+                builder: (_) {
+                    return MapView(
+                        // TODO: pass down the data to show
+                        // data and cache it
+                        onConfirmedClicked: (_, _, _, _) {
+                            Navigator.push<void>(
+                                context,
+                                MaterialPageRoute<void>(
+                                    builder: (context) => TrainListPage(
+                                        srcStation: srcStation,
+                                        destStation: destStation,
+                                        stations: widget.stations,
+                                    ),
+                                ),
+                            );
+                        }
+                    );
+                },
             );
         };
     }
