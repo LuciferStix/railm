@@ -28,6 +28,62 @@ class TrainLiveStatusPage extends StatefulWidget {
 
 class TrainLiveStatusPageState extends State<TrainLiveStatusPage> {
     bool _liveMode = false;
+    Status? _status;
+    Timer? _timer;
+
+    @override
+    void initState() {
+        super.initState();
+
+        _timer = Timer.periodic(
+            Duration(seconds: 2),
+            (_) async {
+                if (_liveMode) {
+                    return;
+                }
+
+                final data = await Status.fetchStatus(widget.train.number);
+
+                if (!mounted) {
+                    return;
+                }
+
+                setState(() {
+                    _status = data;
+                });
+            }
+        );
+    }
+
+    @override
+    void dispose() {
+        super.dispose();
+        _timer?.cancel();
+    }
+
+    VoidCallback? _getOnTap(String stationId) {
+        if (!_liveMode) {
+            return null;
+        }
+
+        return () {
+            // TODO: improve error handling
+            // for update failure
+            setState(() {
+                _status = Status(
+                    state: TrainStatus.running,
+                    number: widget.train.number,
+                    station: stationId,
+                );
+            });
+
+            Status.updateStatus(
+                widget.train.number,
+                stationId,
+            );
+        };
+    }
+
 
     @override
     Widget build(BuildContext context) {
@@ -51,6 +107,8 @@ class TrainLiveStatusPageState extends State<TrainLiveStatusPage> {
                                     stops: widget.train.stops,
                                     stations: widget.stations,
                                     isLiveMode: _liveMode,
+                                    status: _status,
+                                    onTap: _getOnTap,
                                 ),
                             ),
                             widget.mapData == null ?
@@ -154,11 +212,13 @@ class TrainLiveStatusHeading extends StatelessWidget {
     }
 }
 
-class TrainStopsList extends StatefulWidget {
+class TrainStopsList extends StatelessWidget {
     final String trainNumber;
     final List<TrainStop> stops;
     final List<Station> stations;
     final bool isLiveMode;
+    final Status? status; 
+    final VoidCallback? Function(String) onTap;
 
     const TrainStopsList({
         super.key,
@@ -166,68 +226,9 @@ class TrainStopsList extends StatefulWidget {
         required this.stops,
         required this.stations,
         required this.isLiveMode,
+        required this.onTap,
+        this.status,
     });
-
-    @override
-    State<StatefulWidget> createState() => TrainStopsListState();
-}
-
-class TrainStopsListState extends State<TrainStopsList> {
-    Status? _status;
-    Timer? _timer;
-
-    @override
-    void initState() {
-        super.initState();
-
-        _timer = Timer.periodic(
-            Duration(seconds: 2),
-            (_) async {
-                if (widget.isLiveMode) {
-                    return;
-                }
-
-                final data = await Status.fetchStatus(widget.trainNumber);
-
-                if (!mounted) {
-                    return;
-                }
-
-                setState(() {
-                    _status = data;
-                });
-            }
-        );
-    }
-
-    @override
-    void dispose() {
-        super.dispose();
-        _timer?.cancel();
-    }
-
-    VoidCallback? _getOnTap(String stationId) {
-        if (!widget.isLiveMode) {
-            return null;
-        }
-
-        return () {
-            // TODO: improve error handling
-            // for update failure
-            setState(() {
-                _status = Status(
-                    state: TrainStatus.running,
-                    number: widget.trainNumber,
-                    station: stationId,
-                );
-            });
-
-            Status.updateStatus(
-                widget.trainNumber,
-                stationId,
-            );
-        };
-    }
 
     @override
     Widget build(BuildContext context) {
@@ -238,16 +239,16 @@ class TrainStopsListState extends State<TrainStopsList> {
                     child: Card(
                         clipBehavior: .hardEdge,
                         child: ListView.separated(
-                            itemCount: widget.stops.length,
+                            itemCount: stops.length,
                             itemBuilder: (context, index) {
-                                final stop = widget.stops[index];
+                                final stop = stops[index];
                                 return TrainStopCard(
                                     stop: stop,
-                                    stations: widget.stations,
-                                    here: _status != null ?
-                                            _status?.station == stop.station :
+                                    stations: stations,
+                                    here: status != null ?
+                                            status?.station == stop.station :
                                             false,
-                                    onTap: _getOnTap(stop.station),
+                                    onTap: onTap(stop.station),
                                 );
                             },
                             separatorBuilder: (context, index) {
