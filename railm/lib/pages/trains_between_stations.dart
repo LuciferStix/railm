@@ -5,6 +5,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:railm/components/loading.dart';
+import 'package:railm/components/map.dart';
 import 'package:railm/models/station.dart';
 import 'package:railm/models/train.dart';
 import 'package:railm/pages/train_live_status.dart';
@@ -14,12 +15,14 @@ class TrainListPage extends StatefulWidget {
     final List<Station> stations;
     final Station srcStation;
     final Station destStation;
-
+    final MapData mapData;
+    
     const TrainListPage({
         super.key,
         required this.stations,
         required this.srcStation,
         required this.destStation,
+        required this.mapData,
     });
 
     @override
@@ -34,7 +37,7 @@ class TrainListPageState extends State<TrainListPage> {
     @override
     void initState() {
         super.initState();
-        _loadTrains();
+       _loadTrains();
     }
 
     Future<void> _loadTrains() async {
@@ -98,6 +101,7 @@ class TrainListPageState extends State<TrainListPage> {
                         stations: widget.stations,
                         srcStation: widget.srcStation,
                         destStation: widget.destStation,
+                        mapData: widget.mapData,
                     ),
                 ),
             ),
@@ -110,6 +114,7 @@ class TrainList extends StatelessWidget {
     final List<Station> stations;
     final Station srcStation;
     final Station destStation;
+    final MapData mapData;
     
     const TrainList({
         super.key,
@@ -117,6 +122,7 @@ class TrainList extends StatelessWidget {
         required this.stations,
         required this.srcStation,
         required this.destStation,
+        required this.mapData,
     });
 
     @override
@@ -153,6 +159,7 @@ class TrainList extends StatelessWidget {
                                     stations: stations,
                                     srcStation: srcStation,
                                     destStation: destStation,
+                                    mapData: mapData,
                                 );
                             },
                             separatorBuilder: (context, index) {
@@ -226,6 +233,7 @@ class TrainCard extends StatelessWidget {
     final List<Station> stations;
     final Station srcStation;
     final Station destStation;
+    final MapData mapData;
 
     const TrainCard({
         super.key,
@@ -233,6 +241,7 @@ class TrainCard extends StatelessWidget {
         required this.stations,
         required this.srcStation,
         required this.destStation,
+        required this.mapData,
     });
 
     @override
@@ -245,6 +254,7 @@ class TrainCard extends StatelessWidget {
                         builder: (context) => TrainLiveStatusPage(
                             train: train,
                             stations: stations,
+                            mapData: mapData,
                         ),
                     ),
                 );

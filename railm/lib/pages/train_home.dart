@@ -268,7 +268,7 @@ class FindTrainsCardState extends State<FindTrainsCard> {
                     return MapView(
                         // TODO: pass down the data to show
                         // data and cache it
-                        onConfirmedClicked: (_, _, _, _) {
+                        onConfirmedClicked: (data) {
                             Navigator.push<void>(
                                 context,
                                 MaterialPageRoute<void>(
@@ -276,6 +276,7 @@ class FindTrainsCardState extends State<FindTrainsCard> {
                                         srcStation: srcStation,
                                         destStation: destStation,
                                         stations: widget.stations,
+                                        mapData: data,
                                     ),
                                 ),
                             );

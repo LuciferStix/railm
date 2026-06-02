@@ -11,13 +11,24 @@ import 'package:railm/components/loading.dart';
 import 'package:railm/configs/configs.dart';
 import 'package:http/http.dart' as http;
 
+class MapData {
+    final num stationLng;
+    final num stationLat;
+    final num clientLng;
+    final num clientLat;
+    final int selectedRoute;
+
+    const MapData({
+        required this.stationLng,
+        required this.stationLat,
+        required this.clientLng,
+        required this.clientLat,
+        required this.selectedRoute,
+    });
+}
+
 class MapView extends StatefulWidget {
-    final void Function(
-        num srcLng,
-        num srcLat,
-        num destLng,
-        num destLat,
-    ) onConfirmedClicked;
+    final void Function(MapData) onConfirmedClicked;
     const MapView({super.key, required this.onConfirmedClicked});
     
     @override
@@ -212,8 +223,13 @@ class MapViewState extends State<MapView> {
                             null : (){
                                 Navigator.pop(context);
                                 widget.onConfirmedClicked(
-                                    _latitude!, _longitude!,
-                                    _destLat!, _destLong!,
+                                    MapData(
+                                        stationLng: _destLong!,
+                                        stationLat: _destLat!,
+                                        clientLng: _longitude!,
+                                        clientLat: _latitude!,
+                                        selectedRoute: _selectedRouted,
+                                    ),
                                 );
                             },
                         child: Text(

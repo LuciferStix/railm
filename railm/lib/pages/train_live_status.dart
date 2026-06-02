@@ -5,6 +5,7 @@
 
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:railm/components/map.dart';
 import 'package:railm/models/station.dart';
 import 'package:railm/models/status.dart';
 import 'package:railm/models/train.dart';
@@ -12,11 +13,13 @@ import 'package:railm/models/train.dart';
 class TrainLiveStatusPage extends StatefulWidget {
     final Train train;
     final List<Station> stations;
+    final MapData? mapData;
 
     const TrainLiveStatusPage({
         super.key,
         required this.train,
         required this.stations,
+        this.mapData,
     });
 
     @override
