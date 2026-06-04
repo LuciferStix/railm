@@ -36,6 +36,26 @@ class MapView extends StatefulWidget {
         required this.onConfirmedClicked, 
         required this.srcStationId
     });
+
+
+    static Future<Map<String, dynamic>> fetchRoute(
+        String profile,
+        num srcLng,
+        num srcLat,
+        num destLng,
+        num destLat,
+    ) async {
+        final url =
+            'https://api.mapbox.com/directions/v5/mapbox/$profile/'
+            '$srcLng,$srcLat;$destLng,$destLat'
+            '?alternatives=true'
+            '&overview=full'
+            '&geometries=geojson'
+            '&access_token=${Configs.mapboxToken}';
+
+        final resp = await http.get(Uri.parse(url));
+        return jsonDecode(resp.body);
+    }
     
     @override
     State<StatefulWidget> createState() => MapViewState();
@@ -84,28 +104,23 @@ class MapViewState extends State<MapView> {
                 _destLong = stationLocation['long'];
             });
 
-            await fetchRoutes(_destLong!, _destLat!);
+            await _fetchRoutes(_destLong!, _destLat!);
         }
     }
 
-    Future<void> fetchRoutes(num longitude, num latitude) async {
-        final url = 'https://api.mapbox.com/directions/v5/mapbox/driving/'
-                    '$_longitude,$_latitude;$longitude,$latitude'
-                    '?geometries=geojson'
-                    '&alternatives=true'
-                    '&overview=full'
-                    '&access_token=${Configs.mapboxToken}';
+    Future<void> _fetchRoutes(num longitude, num latitude) async {
+        final data = await MapView.fetchRoute(
+            'driving', _longitude!,
+            _latitude!, longitude, latitude,
+        );
 
-        final resp = await http.get(Uri.parse(url));
-        final data = jsonDecode(resp.body);
-        
         setState(() {
             _routes = data['routes'] as List<dynamic>;
         });
-        await drawRoute(_routes, _selectedRouted);
+        await _drawRoute(_routes, _selectedRouted);
     }
 
-    Future<void> drawRoute(List<dynamic> routes, int selected) async {
+    Future<void> _drawRoute(List<dynamic> routes, int selected) async {
         final style = _map!.style;
 
         for (int i = 0; i < routes.length; i++) {
@@ -197,7 +212,7 @@ class MapViewState extends State<MapView> {
                                     _destLat = cord.lat;
                                     _destLong = cord.lng;
                                 });
-                                await fetchRoutes(cord.lng, cord.lat);
+                                await _fetchRoutes(cord.lng, cord.lat);
                             },
                         ),
                     ),
@@ -230,7 +245,7 @@ class MapViewState extends State<MapView> {
                                         _selectedRouted = index;
                                     });
 
-                                    await drawRoute(_routes, _selectedRouted);
+                                    await _drawRoute(_routes, _selectedRouted);
                                 }
                             );
                         },

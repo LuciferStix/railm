@@ -32,29 +32,42 @@ class TrainLiveStatusPageState extends State<TrainLiveStatusPage> {
     bool _liveMode = false;
     Status? _status;
     Timer? _timer;
+
     String? _trainDelay;
+    num? _trainDelayMins;
+    num? _travelTimeMins;
+    num? _trafficDelayMins;
 
     @override
     void initState() {
         super.initState();
+        _fetchRoutesTravelTime();
 
         _timer = Timer.periodic(
             Duration(seconds: 2),
             (_) async {
-                if (_liveMode) {
-                    final srcStationId = widget.srcStationId;
-                    if (srcStationId == null) {
-                        return;
-                    }
+                final mapData = widget.mapData;
+                if (mapData != null && _travelTimeMins != null) {
+                    final routesTrafficData = await MapView.fetchRoute(
+                            'driving-traffic',
+                            mapData.clientLng,
+                            mapData.clientLat,
+                            mapData.stationLng,
+                            mapData.stationLat,
+                        );
 
-                   String trainDelay = "Unknown";
+                    final selectedRouteTrafficData = routesTrafficData['routes'][mapData.selectedRoute];
+                    final trafficDelay = (selectedRouteTrafficData['duration'] / 60).floor() - _travelTimeMins;
+
+                    setState(() {
+                        _trafficDelayMins = trafficDelay;
+                    });
+                }
+
+                if (_liveMode) {
                     if (_status != null) {
-                        trainDelay = _computeDelay(srcStationId, _status!);
-                        setState(() {
-                            _trainDelay = trainDelay;
-                        });
+                        _setTrainDelay(_status!);
                     }
-                    return;
                 }
 
                 final data = await Status.fetchStatus(widget.train.number);
@@ -67,20 +80,44 @@ class TrainLiveStatusPageState extends State<TrainLiveStatusPage> {
                     _status = data;
                 });
 
-                final srcStationId = widget.srcStationId;
-                if (srcStationId == null) {
-                    return;
-                }
-
-                String trainDelay = "Unknown";
                 if (data != null) {
-                    trainDelay = _computeDelay(srcStationId, data);
-                    setState(() {
-                        _trainDelay = trainDelay;
-                    });
+                    _setTrainDelay(data);
                 }
             }
         );
+    }
+
+    void _setTrainDelay(Status status) {
+        final srcStationId = widget.srcStationId;
+        if (srcStationId == null) {
+            return;
+        }
+
+        String? trainDelay;
+        num trainDelayMins;
+        (trainDelayMins, trainDelay) = _computeDelay(srcStationId, status);
+        setState(() {
+            _trainDelay = trainDelay;
+            _trainDelayMins = trainDelayMins;
+        });
+    }
+
+    Future<void> _fetchRoutesTravelTime() async {
+        final mapData = widget.mapData;
+        if (mapData != null) {
+            final routesTravelData = await MapView.fetchRoute(
+                'driving',
+                mapData.clientLng,
+                mapData.clientLat,
+                mapData.stationLng,
+                mapData.stationLat,
+            );
+            final selectedRouteTravelData = routesTravelData['routes'][mapData.selectedRoute];
+
+            setState(() {
+                _travelTimeMins = (selectedRouteTravelData['duration'] / 60).floor();
+            });
+        }
     }
 
     @override
@@ -128,16 +165,26 @@ class TrainLiveStatusPageState extends State<TrainLiveStatusPage> {
                             text: _trainDelay ?? "Unknown",
                         ),
                         StatusViewCard(
-                            heading: 'Traffic Delay',
-                            text: '8 mins',
+                            heading: 'Route Delay',
+                            text: _travelTimeMins == null ? 
+                                "Unknown" : 
+                                "$_travelTimeMins mins",
                         ),
                     ]
                 ),
                 StatusViewRow(
                     children: [
                         StatusViewCard(
+                            heading: 'Traffic Delay',
+                            text: _trafficDelayMins == null ?
+                                "Unknown" :
+                                "$_trafficDelayMins mins",
+                        ),
+                        StatusViewCard(
                             heading: 'Expected Delay',
-                            text: '21 mins',
+                            text: _travelTimeMins == null || _trafficDelayMins == null || _trainDelayMins == null ?
+                                "Unknown" :
+                                "${_travelTimeMins! + _trafficDelayMins! + _trainDelayMins!} mins",
                         ),
                     ]
                 ),
@@ -153,7 +200,7 @@ class TrainLiveStatusPageState extends State<TrainLiveStatusPage> {
         return hrs * 60 + mins;
     }
 
-    String _computeDelay(String srcStationId, Status status) {
+    (num, String) _computeDelay(String srcStationId, Status status) {
         String currStationId = status.station;
         int currStationPos = widget.train.stops.indexWhere(
             (s) => s.station == currStationId
@@ -164,11 +211,11 @@ class TrainLiveStatusPageState extends State<TrainLiveStatusPage> {
         );
 
         if (currStationPos == srcStationPos) {
-            return "Arrived";
+            return (0, "Arrived");
         }
 
         if (currStationPos > srcStationPos) {
-            return "Left";
+            return (0, "Left");
         }
 
         var arrivalRaw = widget.train.stops[currStationPos].arrival;
@@ -182,10 +229,10 @@ class TrainLiveStatusPageState extends State<TrainLiveStatusPage> {
         final diff = lastUpdated - arrival;
 
         if (diff <= 0) {
-            return "Ontime";
+            return (0, "Ontime");
         }
 
-        return "$diff mins";
+        return (diff, "$diff mins");
     }
 
     @override
@@ -229,7 +276,7 @@ class TrainLiveStatusPageState extends State<TrainLiveStatusPage> {
                                                     Icons.insights,
                                                 ),
                                                 style: .new(
-                                                    backgroundColor: .all<Color>(Colors.blueGrey),
+                                                    backgroundColor: .all<Color>(Colors.blue),
                                                 ),
                                                 onPressed: () => {
                                                     showModalBottomSheet(
@@ -259,7 +306,7 @@ class TrainLiveStatusPageState extends State<TrainLiveStatusPage> {
                                                 ),
                                             ),
                                             Switch(
-                                                activeThumbColor: Colors.blueGrey,
+                                                activeThumbColor: Colors.blue,
                                                 value: _liveMode,
                                                 onChanged: (x) => setState(() { _liveMode = x; }),
                                             ),
