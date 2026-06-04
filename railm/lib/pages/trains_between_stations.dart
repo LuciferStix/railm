@@ -12,7 +12,7 @@ import 'package:railm/pages/train_live_status.dart';
 import 'package:localstore/localstore.dart';
 
 class TrainListPage extends StatefulWidget {
-    final List<Station> stations;
+    final Map<String, Station> stations;
     final Station srcStation;
     final Station destStation;
     final MapData mapData;
@@ -111,7 +111,7 @@ class TrainListPageState extends State<TrainListPage> {
 
 class TrainList extends StatelessWidget {
     final List<Train> trains;
-    final List<Station> stations;
+    final Map<String, Station> stations;
     final Station srcStation;
     final Station destStation;
     final MapData mapData;
@@ -230,7 +230,7 @@ class TrainListHeading extends StatelessWidget {
 
 class TrainCard extends StatelessWidget {
     final Train train;
-    final List<Station> stations;
+    final Map<String, Station> stations;
     final Station srcStation;
     final Station destStation;
     final MapData mapData;

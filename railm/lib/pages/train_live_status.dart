@@ -12,7 +12,7 @@ import 'package:railm/models/train.dart';
 
 class TrainLiveStatusPage extends StatefulWidget {
     final Train train;
-    final List<Station> stations;
+    final Map<String, Station> stations;
     final MapData? mapData;
 
     const TrainLiveStatusPage({
@@ -332,7 +332,7 @@ class TrainLiveStatusHeading extends StatelessWidget {
 class TrainStopsList extends StatelessWidget {
     final String trainNumber;
     final List<TrainStop> stops;
-    final List<Station> stations;
+    final Map<String, Station> stations;
     final bool isLiveMode;
     final Status? status; 
     final VoidCallback? Function(String) onTap;
@@ -434,7 +434,7 @@ class TrainStopsListHeading extends StatelessWidget {
 
 class TrainStopCard extends StatelessWidget {
     final TrainStop stop;
-    final List<Station> stations;
+    final Map<String, Station> stations;
     final bool here;
     final VoidCallback? onTap;
     late Station _station;
@@ -446,9 +446,7 @@ class TrainStopCard extends StatelessWidget {
         required this.here,
         this.onTap,
     }) {
-        _station = stations.firstWhere(
-            (s) => s.id == stop.station
-        );
+        _station = stations[stop.station]!;
     }
 
     @override
