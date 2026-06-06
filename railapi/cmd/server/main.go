@@ -23,7 +23,14 @@ func main() {
 	}
 
 	url := os.Getenv("TURSO_DATABASE_URL")
+	if url == "" {
+		log.Fatal("No 'TURSO_DATABASE_URL' env provided")
+	}
+
 	token := os.Getenv("TURSO_DATABASE_TOKEN")
+	if token == "" {
+		log.Fatal("No 'TURSO_DATABASE_TOKEN' env provided")
+	}
 
 	url = fmt.Sprintf("%v?authToken=%v", url, token)
 

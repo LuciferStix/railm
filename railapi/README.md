@@ -9,9 +9,9 @@ Backend APIs (for Railm) to Crowd-Source and maintain train running status with 
 ## Build
 ### Server
 ```bash
-export TURBO_DATABASE_URL="<url>";
-export TURBO_DATABASE_TOKEN="<token>";
-exort PORT="8080";
+export TURSO_DATABASE_URL="<url>";
+export TURSO_DATABASE_TOKEN="<token>";
+export PORT="8080";
 
 go build -o build/server cmd/server/main.go # build
 ./build/server # run
@@ -19,7 +19,7 @@ go build -o build/server cmd/server/main.go # build
 
 ### Run from prebuild binaries
 ```bash
-TURBO_DATABASE_URL="<url>" TURBO_DATABASE_TOKEN="<token>" PORT="8080" ./railapi-<arch>-v1.x.x
+TURSO_DATABASE_URL="<url>" TURSO_DATABASE_TOKEN="<token>" PORT="8080" ./railapi-<arch>-v26xx.x
 ```
 
 ### Insert Test Data
