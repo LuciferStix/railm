@@ -23,7 +23,7 @@ class App extends StatefulWidget {
 }
 
 class AppState extends State<App> {
-    final db = Localstore.getInstance(useSupportDir: true);
+    final _db = Localstore.getInstance(useSupportDir: true);
     ThemeMode? _themeMode;
 
     @override
@@ -38,7 +38,7 @@ class AppState extends State<App> {
     }
 
     Future<void> checkCacheRefresh() async {
-        final data = await db.collection("settings")
+        final data = await _db.collection("settings")
             .doc("auto-refresh")
             .get() ?? {
                 'value': false,
@@ -57,14 +57,14 @@ class AppState extends State<App> {
         final diff = DateTime.now().difference(date);
 
         if (diff.inDays >= 7) {
-            db.collection("trains").delete();
-            db.collection("trains-between").delete();
-            db.collection("stations").delete();
+            _db.collection("trains").delete();
+            _db.collection("trains-between").delete();
+            _db.collection("stations").delete();
         }
     }
 
     Future<void> loadTheme() async {
-        final theme = await db.collection("settings").doc("theme").get() ?? {
+        final theme = await _db.collection("settings").doc("theme").get() ?? {
             'value': 'system',
         };
 
