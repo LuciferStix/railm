@@ -8,6 +8,9 @@ smart railway tracking and database management mobile app.
 
 ## Build
 ```bash
+# shows usage
+make help
+
 # run the railapi server first
 # then start the emulator
 emulator -avd # android
@@ -17,22 +20,14 @@ open -a Simulator # iOS
 flutter devices
 
 # then run with
-flutter run \
-    --dart-define=TOKEN=<token> \
-    --dart-define=URL="https://railm-railapi.vercel.app" \
-    --dart-define=MAPBOX_TOKEN=<token>
-# or
-flutter run \
-    --dart-define=TOKEN=<token> \
-    --dart-define=URL="https://railm-railapi.vercel.app" \
-    --dart-define=MAPBOX_TOKEN=<token>
-    -d <device>
+make run-debug RAILAPI_URL=<url> \
+               RAILAPI_TOKEN=<token> \
+               MAPBOX_TOKEN=<token>
 
 # Build
-flutter build apk --release \
-    --dart-define=TOKEN=<token> \
-    --dart-define=URL="https://railm-railapi.vercel.app" \
-    --dart-define=MAPBOX_TOKEN=<token>
+make build RAILAPI_URL=<url> \
+           RAILAPI_TOKEN=<token> \
+           MAPBOX_TOKEN=<token>
 ```
 
 ## Install

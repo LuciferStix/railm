@@ -8,7 +8,11 @@ railm (Railway Mobile), pronounced ‘realm,’ is a cross-platform mobile app p
 
 # Build
 ```bash
-RAILM_API_TOKEN="<token>" RAILM_API_URL="<url>" MAPBOX_API_TOKEN="<token>" ./build.sh
+# shows usage
+make help
+
+# builds whole project
+make RAILAPI_TOKEN=<token> RAILAPI_URL=<url> MAPBOX_TOKEN=<token> 
 ```
 
 # Binaries

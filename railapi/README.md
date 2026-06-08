@@ -9,12 +9,16 @@ Backend APIs (for Railm) to Crowd-Source and maintain train running status with 
 ## Build
 ### Server
 ```bash
-export TURSO_DATABASE_URL="<url>";
-export TURSO_DATABASE_TOKEN="<token>";
-export PORT="8080";
+# shows usage
+make help
 
-go build -o build/server cmd/server/main.go # build
-./build/server # run
+# build
+make build-minimal 
+
+# run
+make run PORT=<port> \
+         TURSO_DATABASE_URL=<url> \
+         TURSO_DATABASE_TOKEN=<token>
 ```
 
 ### Run from prebuild binaries
