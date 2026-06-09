@@ -1,7 +1,10 @@
 FLUTTER ?= flutter
 BUILD ?= build
 RAILM ?= .
-VERSION ?=
+
+DATE = $(shell date +%y%m)
+BUILDVER = $(shell cat ../.build)
+VERSION ?= v$(DATE).$(BUILDVER)
 
 RAILAPI_URL ?=
 RAILAPI_TOKEN ?=
@@ -14,7 +17,7 @@ ifeq ($(shell uname),Darwin)
 	TARGETS += $(BUILD)/railm-ios-$(VERSION).ipa
 endif
 
-.PHONY: build build-android build-ios run-debug run-release clean help
+.PHONY: build build-android build-ios run-debug run-release clean help version
 
 help:
 	@echo "Usage: make [options] [envs]"
@@ -23,8 +26,7 @@ help:
 	@echo "    build                                Builds android and ios app."
 	@echo "    |- build-android                     Builds android app."
 	@echo "    |- build-ios                         Builds ios app."
-	@echo "           [VERSION,"
-	@echo "           RAILAPI_URL,"
+	@echo "           [RAILAPI_URL,"
 	@echo "           RAILAPI_TOKEN,"
 	@echo "           MAPBOX_TOKEN]"
 	@echo
@@ -35,7 +37,8 @@ help:
 	@echo "               RAILAPI_TOKEN,"
 	@echo "               MAPBOX_TOKEN]"
 	@echo
-	@echo "    clean [VERSION]                      Cleans build artifacts."
+	@echo "    clean                                Cleans build artifacts."
+	@echo "    version                              Prints current project version."
 	@echo
 	@echo "  Environment Variables:"
 	@echo "    RAILAPI_URL                          Url for Railapi hosted server."
@@ -44,6 +47,9 @@ help:
 	@echo "    VERSION                              Build Version."
 
 build: $(TARGETS)
+
+version:
+	@echo $(VERSION)
 
 build-android: $(BUILD)/railm-android-$(VERSION).apk
 

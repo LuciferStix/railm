@@ -8,7 +8,9 @@ BUILD ?= $(PWD)/build
 RAILAPI = $(PWD)/railapi
 RAILM = $(PWD)/railm
 
-VERSION = $(shell cat version)
+DATE = $(shell date +%y%m)
+BUILDVER = $(shell cat .build)
+VERSION = v$(DATE).$(BUILDVER)
 
 .PHONY: all railapi railm help version
 
