@@ -7,6 +7,8 @@ RAILAPI_URL ?=
 RAILAPI_TOKEN ?=
 MAPBOX_TOKEN ?=
 
+RELEASE ?=
+
 PWD = $(shell pwd)
 BUILD ?= $(PWD)/build
 
@@ -17,7 +19,7 @@ DATE = $(shell date +%y%m)
 BUILDVER = $(shell cat .build)
 VERSION = v$(DATE).$(BUILDVER)
 
-.PHONY: all railapi railm help version
+.PHONY: all pre-build railapi railm help version
 
 help:
 	@echo "Usage: make [options] [envs]"
@@ -37,8 +39,21 @@ help:
 	@echo "    RAILAPI_URL                          Url for Railapi hosted server."
 	@echo "    RAILAPI_TOKEN                        Token for Railapi APIs."
 	@echo "    MAPBOX_TOKEN                         Token for Mapbox APIs."
+	@echo "    RELEASE=<yes/no>                     Auto increments build number."
 
-build: railapi railm
+TARGETS =
+
+ifeq ($(RELEASE), yes)
+	TARGETS += pre-build
+endif
+
+TARGETS += railapi railm
+
+pre-build: .build
+	@echo `bc -e "$(BUILDVER) + 1"` > .build
+	@echo  "Build Version: $(BUILDVER)"
+
+build: $(TARGETS)
 
 version:
 	@echo $(VERSION)
