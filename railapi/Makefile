@@ -11,10 +11,24 @@ DATE = $(shell date +%y%m)
 BUILDVER = $(shell cat ../.build)
 VERSION ?= v$(DATE).$(BUILDVER)
 
+PORT ?=
+TURSO_DATABASE_URL ?=
+TURSO_DATABASE_TOKEN ?=
+
 TARGETS = \
 	$(BUILD)/railapi-linux-amd64-$(VERSION) \
 	$(BUILD)/railapi-linux-arm64-$(VERSION) \
 	$(BUILD)/railapi-darwin-arm64-$(VERSION)
+
+ifneq ($(filter run,$(MAKECMDGOALS)),)
+  ifndef TURSO_DATABASE_URL
+    $(error TURSO_DATABASE_URL not provided)
+  endif
+
+  ifndef TURSO_DATABASE_TOKEN
+    $(error TURSO_DATABASE_TOKEN not provided)
+  endif
+endif
 
 .PHONY: build build-minimal run clean help version
 

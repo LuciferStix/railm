@@ -19,7 +19,21 @@ TARGETS = \
 	$(BUILD)/railm-android-$(VERSION).apk
 
 ifeq ($(shell uname),Darwin)
-	TARGETS += $(BUILD)/railm-ios-$(VERSION).ipa
+  TARGETS += $(BUILD)/railm-ios-$(VERSION).ipa
+endif
+
+ifneq ($(filter build build-android build-ios run-debug run-release,$(MAKECMDGOALS)),)
+  ifndef RAILAPI_URL
+    $(error RAILAPI_URL not provided)
+  endif
+
+  ifndef RAILAPI_TOKEN
+    $(error RAILAPI_TOKEN not provided)
+  endif
+
+  ifndef MAPBOX_TOKEN
+    $(error MAPBOX_TOKEN not provided)
+  endif
 endif
 
 .PHONY: build build-android build-ios run-debug run-release clean help version
