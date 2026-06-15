@@ -241,14 +241,16 @@ class TrainLiveStatusPageState extends State<TrainLiveStatusPage> {
                                                     Icons.insights,
                                                 ),
                                                 style: .new(
-                                                    backgroundColor: .all<Color>(Colors.blue),
+                                                    backgroundColor: _cards.isEmpty ? 
+                                                        .all<Color>(Colors.grey) :
+                                                        .all<Color>(Colors.blue),
                                                 ),
-                                                onPressed: () => {
+                                                onPressed: _cards.isEmpty ? null : () {
                                                     showModalBottomSheet(
                                                         context: context,
                                                         useSafeArea: true,
                                                         builder: (_) => _getStatusView(),
-                                                    ),
+                                                    );
                                                 },
                                             ),
                                             Text(
