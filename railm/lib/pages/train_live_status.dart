@@ -528,20 +528,19 @@ class TrainStopCard extends StatelessWidget {
     final Map<String, Station> stations;
     final bool here;
     final VoidCallback? onTap;
-    late Station _station;
 
-    TrainStopCard({
+    const TrainStopCard({
         super.key,
         required this.stop,
         required this.stations,
         required this.here,
         this.onTap,
-    }) {
-        _station = stations[stop.station]!;
-    }
+    });
 
     @override
     Widget build(BuildContext context) {
+        final station = stations[stop.station]!;
+
         Widget arrival = stop.arrival == "--:--" ?
                             Icon(
                                 Icons.subdirectory_arrow_right,
@@ -577,7 +576,7 @@ class TrainStopCard extends StatelessWidget {
                             flex: 4,
                             child: Container(
                                 alignment: .centerStart,
-                                child: Text(_station.name),
+                                child: Text(station.name),
                             ),
                         ),
                         Expanded(

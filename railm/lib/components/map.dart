@@ -154,7 +154,7 @@ class MapViewState extends State<MapView> {
                     sourceId: srcId,
                 )
                 ..lineWidth = selected == i ? 6 : 3
-                ..lineColor = Colors.blue.value
+                ..lineColor = Colors.blue.toARGB32()
                 ..lineOpacity = selected == i ? 1.0 : 0.4,
             );
         }
@@ -192,8 +192,8 @@ class MapViewState extends State<MapView> {
                             styleUri: brightess == .dark ?
                                 MapboxStyles.DARK:
                                 MapboxStyles.STANDARD,
-                            cameraOptions: CameraOptions(
-                                center: .new(
+                            viewport: CameraViewportState(
+                                center: Point(
                                     coordinates: .new(_lng1!, _lat1!),
                                 ),
                                 zoom: 13,
@@ -206,22 +206,25 @@ class MapViewState extends State<MapView> {
                                         pulsingEnabled: true,
                                     ),
                                 );
-                            },
-                            onTapListener: (data) async {
-                                final cord = data.point.coordinates;
-                                await _db.collection("station-locations")
-                                    .doc(widget.srcStationId)
-                                    .set({
-                                        'lat': cord.lat,
-                                        'long': cord.lng,
-                                    });
+                                map.addInteraction(
+                                    TapInteraction.onMap((context) async {
+                                            final cord = context.point.coordinates;
+                                            await _db.collection("station-locations")
+                                                .doc(widget.srcStationId)
+                                                .set({
+                                                    'lat': cord.lat,
+                                                    'long': cord.lng,
+                                                });
 
-                                setState(() {
-                                    _lng2 = cord.lng;
-                                    _lat2 = cord.lat;
-                                });
+                                            setState(() {
+                                                _lng2 = cord.lng;
+                                                _lat2 = cord.lat;
+                                            });
 
-                                await _fetchRoutes(cord.lng, cord.lat);
+                                            await _fetchRoutes(cord.lng, cord.lat);
+                                        }
+                                    ),
+                                );
                             },
                         ),
                     ),
