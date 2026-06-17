@@ -3,7 +3,7 @@ Backend APIs (for Railm) to Crowd-Source and maintain train running status with 
 
 # Build Instruction
 ### Dependencies
-- go v1.24.x
+- go v1.25.x
 - trubodb
 
 ## Build
