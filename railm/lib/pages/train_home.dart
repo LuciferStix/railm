@@ -209,6 +209,27 @@ class LiveTrainCardNumberFieldState extends State<LiveTrainCardNumberField> {
         if (!res) {
             setState(() { _value = null; });
             _controller.clear();
+
+            if (!mounted) return;
+
+            showDialog(
+                barrierDismissible: true,
+                context: context,
+                builder: (context) {
+                    return AlertDialog(
+                        title: Text('Invalid Train Number'),
+                        content: Text(
+                            'No such train number found.',
+                        ),
+                        actions: [
+                            TextButton(
+                                child: Text('Ok'),
+                                onPressed: () => Navigator.pop(context),
+                            )
+                        ],
+                    );
+                },
+            );
         }
     }
 
