@@ -10,10 +10,11 @@ import (
 	"log"
 	"os"
 	"railapi/internals/app"
+	"strconv"
 )
 
 const (
-	RANK_THRESHOLD = 3
+	RANK_THRESHOLD uint = 3
 )
 
 func main() {
@@ -32,12 +33,26 @@ func main() {
 		log.Fatal("No 'TURSO_DATABASE_TOKEN' env provided")
 	}
 
+	threshold := RANK_THRESHOLD
+	rankThres := os.Getenv("RANK_THRESHOLD")
+	if len(rankThres) > 0 {
+		t, err := strconv.ParseUint(rankThres, 10, 16)
+		if err != nil {
+			log.Printf(
+				"Ignoring RANK_THRESHOLD env variable due to parse error: %v",
+				err.Error(),
+			)
+		} else {
+			threshold = uint(t)
+		}
+	}
+
 	url = fmt.Sprintf("%v?authToken=%v", url, token)
 
 	a, err := app.NewApp(
 		url,
 		port,
-		RANK_THRESHOLD,
+		threshold,
 	)
 	if err != nil {
 		log.Fatalf(
