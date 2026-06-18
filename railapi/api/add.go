@@ -67,6 +67,21 @@ func (c *Context) AddStation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	s, err := db.GetStation(c.sql, station.Id)
+	if err != nil {
+		log.Printf(
+			"failed to get 'models.Station': %v",
+			err.Error(),
+		)
+		serverError(w)
+		return
+	}
+
+	if s != nil {
+		failed(w, "station with same id already exists")
+		return
+	}
+
 	err = db.InsertStation(c.sql, &station)
 	if err != nil {
 		log.Printf(
@@ -97,6 +112,21 @@ func (c *Context) AddTrain(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(body, &train)
 	if err != nil {
 		badRequest(w)
+		return
+	}
+
+	t, err := db.GetTrain(c.sql, train.Number)
+	if err != nil {
+		log.Printf(
+			"failed to get 'models.Train': %v",
+			err.Error(),
+		)
+		serverError(w)
+		return
+	}
+
+	if t != nil {
+		failed(w, "train with same number already exists")
 		return
 	}
 
